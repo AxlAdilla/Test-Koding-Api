@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Helpers\ResponseJson;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -50,6 +52,18 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        // return parent::render($request, $exception);
+        switch (true) {
+            case ($exception instanceof ValidationException):
+                $data["message"]=$exception->errors();
+                $code=400;
+                break;
+            default:
+                \Log::info(get_class($exception));
+                $data["message"]=$exception->getMessage();
+                $code=400;
+                break;
+        }
+        return ResponseJson::sendResponse('failed',$data,$code);
     }
 }
