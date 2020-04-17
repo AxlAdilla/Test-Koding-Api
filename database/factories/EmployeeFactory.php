@@ -18,9 +18,9 @@ use Faker\Generator as Faker;
 
 $factory->define(Employee::class, function (Faker $faker) {
     return [
-        'employee_name' => $faker->name,
-        'employee_salary' =>$faker->numberBetween($min = 1000000,$max=5000000),
-        'employee_age'=>$faker->numberBetween($min = 0,$max=100),
+        'name' => $faker->name,
+        'salary' =>$faker->numberBetween($min = 1000000,$max=5000000),
+        'age'=>$faker->numberBetween($min = 0,$max=100),
         'profile_image'=>"",
     ];
 });
