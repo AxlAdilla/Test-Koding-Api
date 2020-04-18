@@ -100,7 +100,7 @@ class ApiTest extends TestCase
      * @test
      */
 
-    public function return400RouteNotFound()
+    public function return404RouteNotFound()
     {
         $response = $this->json('POST','/api/-1',[
         ]);
