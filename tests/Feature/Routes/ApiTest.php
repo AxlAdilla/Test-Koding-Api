@@ -96,4 +96,23 @@ class ApiTest extends TestCase
         ])->assertStatus(400);
     }
 
+    /**
+     * @test
+     */
+
+    public function return400RouteNotFound()
+    {
+        $response = $this->json('POST','/api/-1',[
+        ]);
+
+        $response->assertJsonStructure([
+            'status','data'
+        ])->assertJson([
+            'status'=>'failed',
+            'data'=>[
+                'message'=>'Route not found'
+            ]
+        ])->assertStatus(404);
+    }
+
 }
