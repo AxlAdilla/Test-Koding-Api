@@ -15,8 +15,8 @@ class EmployeeService
         return $this->employeeRepo->index();
     }
 
-    public function showEmployee(Employee $employee)
+    public function showEmployee($id)
     {
-        return $employee;
+        return $this->employeeRepo->show($id);
     }
 }

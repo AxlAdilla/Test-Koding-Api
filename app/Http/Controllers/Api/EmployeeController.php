@@ -36,8 +36,8 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-        $employee = $this->employeeService->showEmployees($id);
-        
+        $employee = $this->employeeService->showEmployee($id);
+        return ResponseJson::sendResponse('success',new EmployeeResource($employee),200);
     }
 
     public function edit($id)

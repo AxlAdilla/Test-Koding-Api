@@ -6,6 +6,7 @@ use Throwable;
 use App\Helpers\ResponseJson;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -62,6 +63,10 @@ class Handler extends ExceptionHandler
             case ($exception instanceof AuthenticationException):
                 $data["message"]=$exception->getMessage();
                 $code=401;
+                break;
+            case ($exception instanceof ModelNotFoundException):
+                $data["message"]=$exception->getMessage();
+                $code=404;
                 break;
             default:
                 $data["message"]=$exception->getMessage();

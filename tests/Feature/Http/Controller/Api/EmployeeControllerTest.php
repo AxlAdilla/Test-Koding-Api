@@ -23,8 +23,19 @@ class EmployeeControllerTest extends TestCase
     public function cannotAccessWithoutToken(Type $var = null)
     {
         $index = $this->json('get','/api/v1/employees');
-
         $index->assertJsonStructure([
+            'status','data'
+        ])->assertJson([
+            'status'=>'failed',
+            'data'=>[
+                'message'=>'Unauthenticated.'
+            ]
+        ])->assertStatus(401);
+
+        $employee  = factory(Employee::class)->create();
+        $show = $this->json('get','/api/v1/employee/'.$employee->id);
+
+        $show->assertJsonStructure([
             'status','data'
         ])->assertJson([
             'status'=>'failed',
@@ -105,5 +116,24 @@ class EmployeeControllerTest extends TestCase
                 'profile_image'=>$employee->profile_image
             ]
         ])->assertStatus(200);
+    }
+
+    /**
+     * @test
+     */
+
+    public function return404EmployeeShowModelNotFound()
+    {
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('get',"/api/v1/employee/-1");
+        \Log::info($response->getContent());
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'message'
+            ]
+        ])->assertJson([
+            'status'=>'failed'
+        ])->assertStatus(404);
     }
 }

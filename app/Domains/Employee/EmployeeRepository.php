@@ -10,4 +10,9 @@ class EmployeeRepository
     {
         return Employee::all();
     }
+
+    public function show($id)
+    {
+        return Employee::findOrFail($id);
+    }
 }
