@@ -26,6 +26,6 @@ Route::namespace('Api')->prefix('v1')->group(function(){
         Route::get('/employee/{id}','EmployeeController@show');
         Route::post('/create','EmployeeController@store');
         Route::put('/update/{id}','EmployeeController@update');
-        Route::put('/delete/{id}','EmployeeController@destroy');
+        Route::delete('/delete/{id}','EmployeeController@destroy');
     });
 });

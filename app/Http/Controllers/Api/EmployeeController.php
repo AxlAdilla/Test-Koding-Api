@@ -46,6 +46,7 @@ class EmployeeController extends Controller
 
     public function destroy($id)
     {
-        //
+        $employee = $this->employeeService->destroyEmployee($id);
+        return ResponseJson::sendResponse('success',$employee,200);
     }
 }

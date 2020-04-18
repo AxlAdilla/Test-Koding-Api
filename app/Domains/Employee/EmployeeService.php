@@ -47,6 +47,13 @@ class EmployeeService
         return $this->employeeRepo->update($employee,$attributes);
     }
 
+    public function destroyEmployee($id)
+    {
+        $employee = $this->employeeRepo->show($id);
+        $this->deleteFile($employee->profile_image);
+        return $this->employeeRepo->destroy($employee);
+    }
+
     private function uploadFile($image){
         return $image->store('','public');
     }

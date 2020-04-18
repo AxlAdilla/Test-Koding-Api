@@ -27,4 +27,10 @@ class EmployeeRepository
         $employee->update($attributes);
         return $employee->fresh();
     }
+
+    public function destroy($employee)
+    {
+        $employee->delete();
+        return $employee;
+    }
 }
