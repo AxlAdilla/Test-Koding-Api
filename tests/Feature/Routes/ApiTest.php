@@ -53,8 +53,6 @@ class ApiTest extends TestCase
             'password'=>'dummy'
         ]);
             
-        \Log::info($response->getContent());
-
         $response->assertJsonStructure([
             'status','data'
         ])->assertJson([
@@ -75,8 +73,6 @@ class ApiTest extends TestCase
             'password'=>'dummy'
         ]);
             
-        \Log::info($response->getContent());
-
         $response->assertJsonStructure([
             'status','data'
         ])->assertJson([

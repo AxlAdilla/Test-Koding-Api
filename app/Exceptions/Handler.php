@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Throwable;
 use App\Helpers\ResponseJson;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -58,8 +59,11 @@ class Handler extends ExceptionHandler
                 $data["message"]=$exception->errors();
                 $code=400;
                 break;
+            case ($exception instanceof AuthenticationException):
+                $data["message"]=$exception->getMessage();
+                $code=401;
+                break;
             default:
-                \Log::info(get_class($exception));
                 $data["message"]=$exception->getMessage();
                 $code=400;
                 break;
