@@ -81,6 +81,18 @@ class EmployeeControllerTest extends TestCase
                 'message'=>'Unauthenticated.'
             ]
         ])->assertStatus(401);
+
+        $employee=factory(Employee::class)->create();
+        $delete = $this->json('DELETE','api/v1/delete/'.$employee->id);
+
+        $delete->assertJsonStructure([
+            'status','data'
+        ])->assertJson([
+            'status'=>'failed',
+            'data'=>[
+                'message'=>'Unauthenticated.'
+            ]
+        ])->assertStatus(401);
     }
 
     /**
@@ -414,6 +426,42 @@ class EmployeeControllerTest extends TestCase
                 'name'=>$name,
                 'salary'=>$salary,
                 'age'=>$age,
+            ]
+        ])->assertStatus(200);
+    }
+
+    public function return404IfDeletedEmployeeModelNotFound()
+    {
+        $user = factory(User::class)->create();
+        
+        $response = $this->actingAs($user,'api')->json('DELETE','api/v1/update/-1');
+
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'message'
+            ]
+        ])->assertJson([
+            'status'=>'failed',
+        ])->assertStatus(404);
+    }
+
+    public function canDeleteEmployee()
+    {
+        $user = factory(User::class)->create();
+        $employee = factory(Employee::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('DELETE','api/v1/update/'.$employee->id);
+
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'name','salary','age'
+            ]
+        ])->assertJson([
+            'status'=>'success',
+            'data'=>[
+                'name'=>$employee->name,
+                'salary'=>$employee->salary,
+                'age'=>$employee->age
             ]
         ])->assertStatus(200);
     }
