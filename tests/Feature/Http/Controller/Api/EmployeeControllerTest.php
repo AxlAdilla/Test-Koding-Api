@@ -89,6 +89,21 @@ class EmployeeControllerTest extends TestCase
         $user = factory(User::class)->create();
         $employee  = factory(Employee::class)->create();
 
-        $response = $this->json('get',"/api/v1/employee/$employee->id");
+        $response = $this->actingAs($user,'api')->json('get',"/api/v1/employee/$employee->id");
+
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'id','employee_name','employee_salary','employee_age','profile_image'
+            ]
+        ])->assertJson([
+            'status'=>'success',
+            'data'=>[
+                'id'=>$employee->id,
+                'employee_name'=>$employee->name,
+                'employee_salary'=>$employee->salary,
+                'employee_age'=>$employee->age,
+                'profile_image'=>$employee->profile_image
+            ]
+        ])->assertStatus(200);
     }
 }
