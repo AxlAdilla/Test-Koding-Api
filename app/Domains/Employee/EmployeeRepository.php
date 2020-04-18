@@ -15,4 +15,10 @@ class EmployeeRepository
     {
         return Employee::findOrFail($id);
     }
+
+    public function store($attributes)
+    {
+        $employee = Employee::create($attributes);
+        return $employee;
+    }
 }

@@ -24,7 +24,7 @@ Route::namespace('Api')->prefix('v1')->group(function(){
     Route::middleware('auth:api')->group(function(){
         Route::get('/employees','EmployeeController@index');
         Route::get('/employee/{id}','EmployeeController@show');
-        Route::post('/create','EmployeeController@create');
+        Route::post('/create','EmployeeController@store');
         Route::put('/update/{id}','EmployeeController@update');
         Route::put('/delete/{id}','EmployeeController@destroy');
     });

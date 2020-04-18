@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Helpers\ResponseJson;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Domains\Employee\EmployeeService;
 use App\Http\Resources\Employee as EmployeeResource;
+use App\Http\Requests\Api\EmployeeController\EmployeeStore;
 
 class EmployeeController extends Controller
 {
@@ -23,15 +25,10 @@ class EmployeeController extends Controller
         return ResponseJson::sendResponse('success',EmployeeResource::collection($employees),200);
     }
 
-    public function create()
+    public function store(EmployeeStore $request)
     {
-        
-    }
-
-    public function store(Request $request)
-    {
-        $employees = $this->employeeService->storeEmployees();
-        
+        $employee = $this->employeeService->storeEmployee($request->all(),$request->file('profile_image'));
+        return ResponseJson::sendResponse('success',$employee,201);
     }
 
     public function show($id)
