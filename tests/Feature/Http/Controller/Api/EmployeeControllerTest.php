@@ -7,6 +7,7 @@ use Tests\TestCase;
 use App\Models\Employee;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -56,6 +57,23 @@ class EmployeeControllerTest extends TestCase
         ]);
 
         $store->assertJsonStructure([
+            'status','data'
+        ])->assertJson([
+            'status'=>'failed',
+            'data'=>[
+                'message'=>'Unauthenticated.'
+            ]
+        ])->assertStatus(401);
+
+        $faker = Faker::create();
+        $employee=factory(Employee::class)->create();
+        $update = $this->json('PUT','api/v1/update/'.$employee->id,[
+            'name' => $name = $faker->name,
+            'salary' =>$salary = $faker->numberBetween($min = 1000000,$max=5000000),
+            'age'=>$age = $faker->numberBetween($min = 0,$max=100),
+        ]);
+
+        $update->assertJsonStructure([
             'status','data'
         ])->assertJson([
             'status'=>'failed',
@@ -262,5 +280,141 @@ class EmployeeControllerTest extends TestCase
                 'age'=>$age,
             ]
         ])->assertStatus(201);
+    }
+
+    /**
+     * @test
+     */
+    public function return404EmployeeUpdateModelNotFound()
+    {
+        $faker = Faker::create();
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('PUT',"/api/v1/update/-1",[
+            'name' => $name = $faker->name,
+            'salary' =>$salary = $faker->numberBetween($min = 1000000,$max=5000000),
+            'age'=>$age = $faker->numberBetween($min = 0,$max=100),
+        ]);
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'message'
+            ]
+        ])->assertJson([
+            'status'=>'failed'
+        ])->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function return400IfEmployeeUpdateEmptyField()
+    {
+        $user = factory(User::class)->create();
+        $employee = factory(Employee::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('PUT','api/v1/update/'.$employee->id,[
+        ]);
+        
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'message'
+            ]
+        ])->assertJson([
+            'status'=>'failed',
+        ])->assertStatus(400);
+    }
+
+    /**
+     * @test
+     */
+    public function return400IfEmployeeUpdateProfileImagesNotImageFile()
+    {
+        Storage::fake('avatars');
+
+        $file = UploadedFile::fake()->create('document.pdf', 1000, 'application/pdf');
+
+        $faker = Faker::create();
+        $user = factory(User::class)->create();
+        $employee = factory(Employee::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('PUT','api/v1/update/'.$employee->id,[
+            'name' => $name = $faker->name,
+            'salary' =>$salary = $faker->numberBetween($min = 1000000,$max=5000000),
+            'age'=>$age = $faker->numberBetween($min = 0,$max=100),
+            'profile_image'=>$file
+        ]);
+
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'message'
+            ]
+        ])->assertJson([
+            'status'=>'failed',
+        ])->assertStatus(400);
+    }
+
+    /**
+     * @test
+     */
+    public function canUpdateEmployeeWithoutProfileImage()
+    {
+        $faker = Faker::create();
+        $user = factory(User::class)->create();
+        $employee = factory(Employee::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('PUT','api/v1/update/'.$employee->id,[
+            'name' => $name = $faker->name,
+            'salary' =>$salary = $faker->numberBetween($min = 1000000,$max=5000000),
+            'age'=>$age = $faker->numberBetween($min = 0,$max=100),
+        ]);
+        
+        Log::info($response->getContent());
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'name','salary','age','id'
+            ]
+        ])->assertJson([
+            'status'=>'success',
+            'data'=>[
+                'name'=>$name,
+                'salary'=>$salary,
+                'age'=>$age,
+            ]
+        ])->assertStatus(200);
+    }
+
+    /**
+     * @test
+     */
+    public function canUpdateEmployeeWithProfileImage()
+    {
+        Storage::fake('avatars');
+
+        $file = UploadedFile::fake()->image('avatar.jpg');
+
+        $faker = Faker::create();
+
+        $user = factory(User::class)->create();
+        $employee = factory(Employee::class)->create();
+
+        $response = $this->actingAs($user,'api')->json('PUT','api/v1/update/'.$employee->id,[
+            'name' => $name = $faker->name,
+            'salary' =>$salary = $faker->numberBetween($min = 1000000,$max=5000000),
+            'age'=>$age = $faker->numberBetween($min = 0,$max=100),
+            'profile_image'=>$file
+        ]);
+
+        $response->assertJsonStructure([
+            'status','data'=>[
+                'name','salary','age','id','profile_image'
+            ]
+        ])->assertJson([
+            'status'=>'success',
+            'data'=>[
+                'name'=>$name,
+                'salary'=>$salary,
+                'age'=>$age,
+            ]
+        ])->assertStatus(200);
     }
 }
