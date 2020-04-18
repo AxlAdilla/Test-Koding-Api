@@ -21,4 +21,10 @@ class EmployeeRepository
         $employee = Employee::create($attributes);
         return $employee;
     }
+
+    public function update($employee,$attributes)
+    {
+        $employee->update($attributes);
+        return $employee->fresh();
+    }
 }

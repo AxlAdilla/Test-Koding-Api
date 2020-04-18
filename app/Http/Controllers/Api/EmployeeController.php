@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Domains\Employee\EmployeeService;
 use App\Http\Resources\Employee as EmployeeResource;
 use App\Http\Requests\Api\EmployeeController\EmployeeStore;
+use App\Http\Requests\Api\EmployeeController\EmployeeUpdate;
 
 class EmployeeController extends Controller
 {
@@ -37,14 +38,10 @@ class EmployeeController extends Controller
         return ResponseJson::sendResponse('success',new EmployeeResource($employee),200);
     }
 
-    public function edit($id)
+    public function update(EmployeeUpdate $request, $id)
     {
-        //
-    }
-
-    public function update(Request $request, $id)
-    {
-        //
+        $employee = $this->employeeService->updateEmployee($id,$request->all(),$request->file('profile_image'));
+        return ResponseJson::sendResponse('success',$employee,200);
     }
 
     public function destroy($id)
